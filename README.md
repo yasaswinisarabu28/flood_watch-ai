@@ -24,7 +24,7 @@ flood_project/
 │   ├── history.html           # prediction log + trend/pie charts
 │   ├── map.html               # interactive regional flood map (Leaflet)
 │   ├── analytics.html         # model accuracy, rainfall trend, heatmap, scatter
-│   └── settings.html          # profile, model, alerts, cloud, data sources
+│  
 ├── static/
 │   └── style.css
 ├── app.py                    # Flask application (all routes)

@@ -1,0 +1,17 @@
+{
+  "best_model": "KNN",
+  "accuracy": 91.2,
+  "all_results": {
+    "Decision Tree": 89.4,
+    "Random Forest": 90.8,
+    "KNN": 91.2
+  },
+  "features": [
+    "Annual_Rainfall",
+    "Seasonal_Rainfall",
+    "Cloud_Visibility",
+    "Humidity",
+    "Temperature",
+    "Wind_Speed"
+  ]
+}

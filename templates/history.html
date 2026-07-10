@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Prediction History &middot; Floodwatch AI{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h2><span class="panel-icon">&#128202;</span> Historical Prediction Log</h2>
+<div class="history-actions">
+    <form action="/clear-history" method="POST"
+          onsubmit="return confirm('Are you sure you want to clear all prediction history?');">
+        <button type="submit" class="clear-history-btn">
+            🗑 Clear History
+        </button>
+    </form>
+</div>
+  <div class="table-wrap">
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>District</th>
+          <th>Rainfall Data</th>
+          <th>Prediction</th>
+          <th>Risk Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in log_rows %}
+        <tr>
+          <td>{{ row.date }}</td>
+          <td>{{ row.district }}</td>
+          <td>{{ row.rainfall }} mm</td>
+          <td>{{ row.prediction }}</td>
+          <td><span class="chip {{ row.risk_class }}">{{ row.risk_level }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="chart-grid">
+  <section class="panel">
+    <h2>Predicted vs Actual Events</h2>
+    <canvas id="predVsActual" height="220"></canvas>
+  </section>
+  <section class="panel">
+    <h2>Risk Level Distribution</h2>
+    <canvas id="riskDist" height="220"></canvas>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/chart.umd.min.js') }}"></script>
+<script>
+console.log("Chart =", typeof Chart);
+
+const months = {{ months|tojson }};
+const predicted = {{ predicted_series|tojson }};
+const actual = {{ actual_series|tojson }};
+const riskCounts = {{ risk_counts|tojson }};
+
+new Chart(document.getElementById('predVsActual'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: 'Predicted events', data: predicted, borderColor: '#2E9E6D', backgroundColor: 'rgba(46,158,109,0.15)', tension: 0.35, fill: true },
+      { label: 'Actual events', data: actual, borderColor: '#4A90D9', backgroundColor: 'rgba(74,144,217,0.12)', tension: 0.35, fill: true }
+    ]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+new Chart(document.getElementById('riskDist'), {
+  type: 'pie',
+  data: {
+    labels: ['High', 'Medium', 'Low'],
+    datasets: [{ data: riskCounts, backgroundColor: ['#E4574B', '#F0A63A', '#2E9E6D'] }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+</script>
+{% endblock %}

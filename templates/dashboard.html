@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Dashboard &middot; Floodwatch AI{% endblock %}
+
+{% block content %}
+<section class="hero-card">
+  <h1>Welcome to Floodwatch AI, an advanced machine learning-powered system.</h1>
+  <a href="/predict" class="btn-launch">Launch the Full Operational Dashboard</a>
+  <p class="hero-tag">Monitor flood risks using AI-powered weather analysis.</p>
+  <p class="hero-sub">Designed for government emergency management authorities</p>
+</section>
+
+<section class="illustration-card">
+  <svg viewBox="0 0 900 260" class="flood-illustration" role="img" aria-label="Illustration of a flooded street">
+    <defs>
+      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#DCEEF9"/>
+        <stop offset="100%" stop-color="#EAF6EE"/>
+      </linearGradient>
+      <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#8FD3E8"/>
+        <stop offset="100%" stop-color="#4FA9CB"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="900" height="260" fill="url(#skyGrad)"/>
+    <!-- rooftops -->
+    <rect x="40" y="150" width="120" height="60" fill="#C9D6E3"/>
+    <polygon points="30,150 100,110 170,150" fill="#9FB4CC"/>
+    <rect x="740" y="140" width="110" height="70" fill="#C9D6E3"/>
+    <polygon points="730,140 795,100 860,140" fill="#9FB4CC"/>
+    <!-- road -->
+    <rect x="0" y="190" width="900" height="70" fill="#B7C4D4"/>
+    <rect x="0" y="222" width="900" height="6" fill="#F2C230" opacity="0.7"/>
+    <!-- flood water -->
+    <path d="M0,205 Q150,190 300,208 T600,205 T900,210 L900,260 L0,260 Z" fill="url(#waveGrad)"/>
+    <path d="M0,215 Q160,232 320,214 T650,218 T900,215 L900,260 L0,260 Z" fill="#3E93B8" opacity="0.55"/>
+    <!-- car -->
+    <g transform="translate(430,160)">
+      <rect x="0" y="26" width="130" height="34" rx="10" fill="#E4574B"/>
+      <path d="M18,26 Q35,2 60,2 L92,2 Q108,2 116,26 Z" fill="#E4574B"/>
+      <rect x="34" y="8" width="52" height="18" rx="4" fill="#BFE7F2"/>
+      <circle cx="28" cy="62" r="13" fill="#2B2E33"/>
+      <circle cx="104" cy="62" r="13" fill="#2B2E33"/>
+    </g>
+    <!-- person running -->
+    <g transform="translate(230,175)">
+      <circle cx="0" cy="0" r="10" fill="#F0B48A"/>
+      <rect x="-8" y="10" width="16" height="26" rx="6" fill="#4F7CAC"/>
+      <line x1="-8" y1="34" x2="-16" y2="54" stroke="#2B2E33" stroke-width="5" stroke-linecap="round"/>
+      <line x1="8" y1="34" x2="18" y2="50" stroke="#2B2E33" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <!-- ripple accents -->
+    <circle cx="530" cy="235" r="4" fill="#EAF6EE" opacity="0.7"/>
+    <circle cx="560" cy="242" r="3" fill="#EAF6EE" opacity="0.6"/>
+  </svg>
+</section>
+
+<section class="quick-stats">
+  <div class="stat-card">
+    <span class="stat-value">{{ model_accuracy }}%</span>
+    <span class="stat-label">Best model accuracy ({{ model_name }})</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">{{ region_count }}</span>
+    <span class="stat-label">Districts under active monitoring</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">{{ prediction_count }}</span>
+    <span class="stat-label">Predictions logged to date</span>
+  </div>
+</section>
+{% endblock %}

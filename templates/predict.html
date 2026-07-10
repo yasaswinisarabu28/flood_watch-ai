@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Flood Prediction &middot; Floodwatch AI{% endblock %}
+
+{% block content %}
+<div class="predict-grid">
+
+  <section class="panel">
+    <h2><span class="panel-icon">&#127783;&#65039;</span> Run Flood Prediction</h2>
+
+    {% if error %}<div class="alert-box">{{ error }}</div>{% endif %}
+
+    <form method="POST" action="/predict" class="readout-form">
+      <div class="field">
+        <label for="District">District</label>
+        <select name="District" id="District">
+          {% for d in districts %}
+            <option value="{{ d }}" {{ 'selected' if form_values and form_values['District']==d }}>{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field"></div>
+
+      <div class="field">
+        <label for="Annual_Rainfall">Annual Rainfall <span class="unit">mm</span></label>
+        <input type="number" step="0.1" name="Annual_Rainfall" id="Annual_Rainfall" required
+               value="{{ form_values['Annual_Rainfall'] if form_values else '' }}" placeholder="e.g. 2400">
+      </div>
+      <div class="field">
+        <label for="Seasonal_Rainfall">Seasonal Rainfall <span class="unit">mm</span></label>
+        <input type="number" step="0.1" name="Seasonal_Rainfall" id="Seasonal_Rainfall" required
+               value="{{ form_values['Seasonal_Rainfall'] if form_values else '' }}" placeholder="e.g. 1300">
+      </div>
+
+      <div class="field">
+        <label for="Temperature">Temperature <span class="unit">&deg;C</span></label>
+        <input type="number" step="0.1" name="Temperature" id="Temperature" required
+               value="{{ form_values['Temperature'] if form_values else '' }}" placeholder="e.g. 27">
+      </div>
+      <div class="field">
+        <label for="Humidity">Humidity <span class="unit">%</span></label>
+        <input type="number" step="0.1" name="Humidity" id="Humidity" required
+               value="{{ form_values['Humidity'] if form_values else '' }}" placeholder="e.g. 85">
+      </div>
+
+      <div class="field">
+        <label for="Cloud_Visibility">Cloud Visibility <span class="unit">km</span></label>
+        <input type="number" step="0.01" name="Cloud_Visibility" id="Cloud_Visibility" required
+               value="{{ form_values['Cloud_Visibility'] if form_values else '' }}" placeholder="e.g. 2.5">
+      </div>
+      <div class="field">
+        <label for="Wind_Speed">Wind Speed <span class="unit">km/h</span></label>
+        <input type="number" step="0.1" name="Wind_Speed" id="Wind_Speed" required
+               value="{{ form_values['Wind_Speed'] if form_values else '' }}" placeholder="e.g. 22">
+      </div>
+
+      <button type="submit" class="predict-btn">Predict Now</button>
+    </form>
+  </section>
+
+  <section class="panel result-panel">
+    <div class="gauge-wrap">
+      <svg viewBox="0 0 200 120" class="gauge">
+        <path d="M 15 105 A 85 85 0 0 1 185 105" class="gauge-track" pathLength="100"/>
+        <path d="M 15 105 A 85 85 0 0 1 185 105" class="gauge-fill {{ risk_class }}"
+              pathLength="100"
+              style="stroke-dasharray: {{ (probability or 0) }} 100;"/>
+        <line x1="100" y1="105" x2="100" y2="30" class="needle"
+              style="transform: rotate({{ ((probability or 0) * 1.8 - 90) }}deg);"/>
+        <circle cx="100" cy="105" r="6" class="needle-hub"/>
+      </svg>
+      <div class="gauge-readout">
+        <span class="gauge-tier {{ risk_class }}">{{ risk_tier or '—' }}</span>
+        <span class="gauge-value">{{ 'Confidence: ' ~ probability ~ '%' if probability is not none else 'Awaiting input' }}</span>
+      </div>
+    </div>
+
+    {% if prediction %}
+      <p class="affected-area">Affected area: <strong>{{ form_values['District'] }}</strong></p>
+      <h3 class="reco-title">Safety Recommendations</h3>
+      <div class="reco-row">
+        <button class="reco-btn {{ 'reco-active' if risk_class=='risk-high' }}" type="button">&#9888;&#65039; Alert Warning</button>
+        <button class="reco-btn {{ 'reco-active' if risk_class=='risk-high' }}" type="button">&#128737;&#65039; Deploy Teams</button>
+        <button class="reco-btn {{ 'reco-active' if risk_class=='risk-high' }}" type="button">&#8962; Relief Camps</button>
+      </div>
+      {% if risk_class == 'risk-high' %}
+        <p class="verdict-note">Recommend issuing an evacuation advisory and pre-positioning relief resources for {{ form_values['District'] }}.</p>
+      {% elif risk_class == 'risk-medium' %}
+        <p class="verdict-note">Elevated risk — increase monitoring frequency and brief local response teams.</p>
+      {% else %}
+        <p class="verdict-note">No immediate action required. Continue routine monitoring through the monsoon window.</p>
+      {% endif %}
+    {% else %}
+      <p class="verdict-placeholder">Submit station readings to generate a live risk classification.</p>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

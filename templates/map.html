@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Flood-Prone Areas &middot; Floodwatch AI{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>#regionMap{ height: 460px; border-radius: 12px; }</style>
+{% endblock %}
+
+{% block content %}
+<div class="map-grid">
+  <section class="panel map-panel">
+    <h2><span class="panel-icon">&#128205;</span> Interactive Regional Flood Map</h2>
+    <div id="regionMap"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Critical Areas <span class="hint">(next 12 hrs)</span></h2>
+    <ul class="critical-list">
+      {% for r in region_status %}
+      <li>
+        <span class="chip {{ r.risk_class }}">{{ r.risk_level }}</span>
+        <span class="critical-name">{{ r.district }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <h2 class="rain-dial-title">Live Rain Dials</h2>
+    <div class="dial-row">
+      {% for r in region_status[:2] %}
+      <div class="dial">
+        <svg viewBox="0 0 100 60" class="mini-gauge">
+          <path d="M 8 52 A 42 42 0 0 1 92 52" class="gauge-track" pathLength="100"/>
+          <path d="M 8 52 A 42 42 0 0 1 92 52" class="gauge-fill {{ r.risk_class }}" pathLength="100"
+                style="stroke-dasharray: {{ r.probability }} 100;"/>
+        </svg>
+        <span class="dial-label">{{ r.district }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const regions = {{ region_status|tojson }};
+const map = L.map('regionMap').setView([22.9734, 78.6569], 5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 12,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const colors = { 'risk-high': '#E4574B', 'risk-medium': '#F0A63A', 'risk-low': '#2E9E6D' };
+
+regions.forEach(r => {
+  const marker = L.circleMarker([r.lat, r.lng], {
+    radius: 12,
+    color: colors[r.risk_class] || '#4A90D9',
+    fillColor: colors[r.risk_class] || '#4A90D9',
+    fillOpacity: 0.7,
+    weight: 2
+  }).addTo(map);
+  marker.bindPopup(`<strong>${r.district}</strong><br>Risk: ${r.risk_level}<br>Confidence: ${r.probability}%`);
+});
+</script>
+{% endblock %}

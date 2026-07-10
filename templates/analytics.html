@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Analytics &middot; Floodwatch AI{% endblock %}
+
+{% block content %}
+<div class="chart-grid">
+  <section class="panel">
+    <h2>Model Comparative Accuracy</h2>
+    <canvas id="modelAcc" height="220"></canvas>
+    {% if not xgboost_available %}
+    <p class="hint-note">XGBoost isn't installed in this environment yet — run <code>pip install xgboost</code> and retrain to add its bar here.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h2>Monthly Rainfall Trends</h2>
+    <canvas id="rainTrend" height="220"></canvas>
+  </section>
+
+  <section class="panel">
+    <h2>Flood Frequency by Zone</h2>
+    <div class="heatmap-wrap">
+      <table class="heatmap-table">
+        <thead>
+          <tr><th></th>{% for m in months %}<th>{{ m }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for zone, row in heatmap.items() %}
+          <tr>
+            <th>{{ zone }}</th>
+            {% for v in row %}
+            <td style="background: rgba(228,87,75,{{ v / heatmap_max }});">{{ v }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Prediction Confidence vs Error Rate</h2>
+    <canvas id="confError" height="220"></canvas>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/chart.umd.min.js') }}"></script>
+
+<script>
+new Chart(document.getElementById('modelAcc'), {
+  type: 'bar',
+  data: {
+    labels: {{ model_names|tojson }},
+    datasets: [{ data: {{ model_accuracies|tojson }}, backgroundColor: ['#4A90D9', '#2E9E6D', '#F0A63A', '#8C99B5'] }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } }
+});
+
+new Chart(document.getElementById('rainTrend'), {
+  type: 'line',
+  data: {
+    labels: {{ months|tojson }},
+    datasets: [{ label: 'Avg rainfall (mm)', data: {{ monthly_rainfall|tojson }}, borderColor: '#4A90D9', backgroundColor: 'rgba(74,144,217,0.15)', fill: true, tension: 0.35 }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('confError'), {
+  type: 'scatter',
+  data: {
+    datasets: [{ label: 'Test samples', data: {{ scatter_points|tojson }}, backgroundColor: 'rgba(228,87,75,0.55)' }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { title: { display: true, text: 'Prediction confidence' }, min: 0, max: 1 },
+      y: { title: { display: true, text: 'Error (0 = correct, 1 = wrong)' }, min: -0.1, max: 1.1 }
+    }
+  }
+});
+</script>
+{% endblock %}

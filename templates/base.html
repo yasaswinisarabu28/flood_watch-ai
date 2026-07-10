@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Floodwatch AI{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-brand">
+    <span class="app-mark">&#9905;</span>
+    <span class="app-name">FLOODWATCH AI</span>
+  </div>
+  <div class="app-header-actions">
+    
+    
+  </div>
+</div>
+
+<nav class="app-nav">
+  <a href="/" class="nav-link {{ 'active' if active=='dashboard' }}"><span>&#127968;</span> Dashboard</a>
+  <a href="/predict" class="nav-link {{ 'active' if active=='predict' }}"><span>&#127783;&#65039;</span> Flood Prediction</a>
+  <a href="/history" class="nav-link {{ 'active' if active=='history' }}"><span>&#128202;</span> Prediction History</a>
+  <a href="/map" class="nav-link {{ 'active' if active=='map' }}"><span>&#128205;</span> Flood-Prone Areas</a>
+  <a href="/analytics" class="nav-link {{ 'active' if active=='analytics' }}"><span>&#128200;</span> Analytics</a>
+  
+</nav>
+
+<main class="app-content">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="app-foot">
+  Powered by Machine Learning &middot; Flask | XGBoost | IBM Cloud &middot; &copy; 2026
+</footer>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -195,3 +195,9 @@ configured.
 - **Scenario 3 (validation):** `train_model.py`'s printed classification
   report and confusion matrix is the accuracy evidence; `model_info.json`
   records the winning model and its test accuracy for your report.
+
+
+
+  ## Project Demo
+🎥 Demo Video:
+https://drive.google.com/file/d/1xxKafSb7DQwS3gI3UJ6y7LtnZjpwD6nJ/view?usp=drive_link
